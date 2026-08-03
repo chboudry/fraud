@@ -1,0 +1,23 @@
+# Generated data / artifacts (examples regenerate from queries/)
+*.parquet
+*.csv
+*.db
+*.sqlite
+data_out/
+outputs/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# Secrets / environment
+.env
+*.local
+
+# OS / editors
+.DS_Store
+.idea/
+.vscode/
