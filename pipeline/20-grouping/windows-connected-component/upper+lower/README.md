@@ -80,32 +80,9 @@ WITH f, f.DATE_COMMANDE AS T, f.DATE_COMMANDE - duration({months:6}) AS win
 MATCH (f)(()-[:SIMILARITE]-(n:Dossier
         WHERE n.DATE_COMMANDE >= win AND n.DATE_COMMANDE <= T)){1,}(m:Dossier)
 WITH DISTINCT m WHERE m.NODOS <> $nodos
-RETURN collect(m.NODOS) AS window_component   // bridge-cut, exact
+RETURN collect(m.NODOS) AS window_component
 ```
 
 - Leak-safety is built in by `date <= T`; bridge-cutting by `date >= T − Δ`.
 - Pure Cypher; computes **only** the source's reachable piece — no GDS projection, no global WCC.
 - Cost `O(W_s + E_{W_s})` per event; milliseconds at this scale.
-
-## Practical guard
-
-If a community does **not** branch (`nb_merges = 0`, i.e. it is linear), `DFS_NEXT` **is** date-
-ordered and the cheap "walk + date filter" is already correct. Only fall back to the windowed
-`SIMILARITE` traversal when merges exist.
-
-```mermaid
-flowchart TD
-  Q{Query?}
-  Q -->|Full history<br/>point-in-time| DFS["DFS_NEXT + LAST marker<br/>bounded linear scan"]
-  Q -->|Sliding window<br/>bridge-cut| G{Branching?<br/>nb_merges > 0}
-  G -->|No| DFSW["DFS_NEXT + date filter<br/>monotone chain, OK"]
-  G -->|Yes| SIM["Windowed SIMILARITE<br/>traversal per dossier"]
-  style SIM fill:#bbf7d0,stroke:#15803d
-  style DFS fill:#bbf7d0,stroke:#15803d
-```
-
-## Validate before trusting
-
-Because the lower bound is not independently proven, run a **3-way walk-forward ablation** of the
-same feature: (1) cumulative as-of (`DFS_NEXT`), (2) naïve in-window age filter, (3) window-CC
-bridge-cut. Equal AUC/AP ⇒ a definition preference; a lift ⇒ empirical proof on the client's data.
