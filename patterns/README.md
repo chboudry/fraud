@@ -1,4 +1,4 @@
-# Axis B — fraud typologies (taxonomy)
+# Fraud typologies (taxonomy)
 
 Case studies that *compose* several [`pipeline/`](../pipeline/) blocks to catch a **specific**
 fraud. Before listing them, this README fixes the **taxonomy** we use to name them — because
@@ -14,7 +14,7 @@ fraud. Before listing them, this README fixes the **taxonomy** we use to name th
 > A thorough taxonomy gives a shared vocabulary, keeps everyone aligned on real needs, and avoids
 > treating broad categories as if they were actionable use cases.
 
-## The four levels
+## Four levels
 
 | Level | Question it answers | Example |
 |-------|---------------------|---------|
@@ -44,6 +44,7 @@ a folder are linked; the others are natural extensions of the same taxonomy.
 | | Authorized Push Payment (APP) scams | *planned* |
 | | Card-not-present / card fraud | *planned* |
 | **Organized Fraud** — collusion structures (cross-cutting) | Fraud rings | [`fraud-rings`](fraud-rings/) |
+| **Internal Fraud** — an employee abuses legitimate access | Employee-facilitated dormant-account cash-out | [`internal-fraud`](internal-fraud/) |
 
 ### Industry: Banking — Domain: Financial Crime / AML
 
