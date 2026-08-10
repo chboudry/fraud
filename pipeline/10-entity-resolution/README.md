@@ -17,7 +17,8 @@ flowchart TD
     S6 --> D["Dedup"]
     S6 --> L["Linking"]
     S6 --> G["Golden record"]
-    G --> SR["Survivorship rules"]
+    D --> SR["Survivorship rules"]
+    G --> SR
 ```
 
 1. **Normalization** — bring every field to a canonical form *before* any comparison: lowercase, trim, strip accents/punctuation, standardize casing, parse addresses into components, normalize phones to E.164, dates to ISO, etc. Skipping this makes every downstream step noisier — blocking misses candidates and comparisons under-score real matches.
@@ -27,9 +28,9 @@ flowchart TD
 5. **Classification** — turn the score into a decision with thresholds: **Match** / **Possible match** (clerical review) / **No match**.
 6. **Clustering / Entity resolution** — pairwise matches are not transitive on their own; a clustering step groups them into entities: `{A, B, C} = same real-world entity` (connected components, correlation clustering, hierarchical…).
 7. **Resolution strategy / Consolidation** — decide what to *do* with each cluster. Three options:
-   - **Dedup (merge/purge)** — physically collapse the duplicates, keeping a single surviving row. **Destructive** at the record level: the redundant rows are gone.
+   - **Dedup (merge/purge)** — physically collapse the duplicates, keeping a single surviving row (chosen by **survivorship rules** at the record level). **Destructive**: the redundant rows are gone.
    - **Linking** — keep every record as-is and only attach a shared entity/cluster id. No canonical record is built; fully **reversible**.
-   - **Golden record** — **create a *new* canonical "best" record** and link all source records to it, field values arbitrated by **survivorship rules** (most recent, most trusted source, most complete…). Sources are **retained** (cross-referenced) → a *logical* merge, not a row deletion.
+   - **Golden record** — **create a *new* canonical "best" record** and link all source records to it, selecting the best value **per field** via **survivorship rules** (most recent, most trusted source, most complete…). Sources are **retained** (cross-referenced) → a *logical* merge, not a row deletion.
 
 ## For fraud: link the entities, don't merge them into an identity
 
